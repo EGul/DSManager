@@ -10,25 +10,51 @@
 
 @implementation DSManager
 
+-(id)init {
+    
+    if (self = [super init]) {
+        
+        getBlocks = [[NSMutableArray alloc]init];
+        
+    }
+    
+    return self;
+}
+
 -(void)setCurrentIndex:(int)index {
     
     currentIndex = index;
     
-    int multipleIndex = (currentIndex / requestLimit);
+    int limit = 0;
+    int multipleIndex = 0;
+    void (^block)(int);
     
-    if (multipleIndex > currentMultipleIndex) {
-        currentMultipleIndex = multipleIndex;
-        getBlock(currentIndex);
+    for (int i = 0; i < getBlocks.count; i++) {
+        
+        limit = [[[getBlocks objectAtIndex:i]valueForKey:@"limit"]intValue];;
+        multipleIndex = [[[getBlocks objectAtIndex:i]valueForKey:@"multiple_index"]intValue];;
+        block = [[getBlocks objectAtIndex:i]valueForKey:@"block"];
+        
+        int currentMultipleIndex = (currentIndex / limit);
+        
+        if (currentMultipleIndex > multipleIndex) {
+            [[getBlocks objectAtIndex:i]setValue:[NSNumber numberWithInt:currentMultipleIndex] forKey:@"multiple_index"];
+            block(currentIndex);
+        }
+        
     }
     
 }
 
 -(void)setGet:(int)limit block:(void (^)(int))block {
     
-    requestLimit = limit;
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc]init];
+    [dictionary setObject:[NSNumber numberWithInt:limit] forKey:@"limit"];
+    [dictionary setObject:[NSNumber numberWithInt:0] forKey:@"multiple_index"];
+    [dictionary setObject:block forKey:@"block"];
     
-    getBlock = block;
-    
+    [getBlocks addObject:dictionary];
+        
 }
 
 @end

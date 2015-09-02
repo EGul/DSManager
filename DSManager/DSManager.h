@@ -11,10 +11,8 @@
 @interface DSManager : NSObject {
     
     int currentIndex;
-    int currentMultipleIndex;
-    int requestLimit;
     
-    void (^getBlock)(int);
+    NSMutableArray *getBlocks;
     
 }
 
